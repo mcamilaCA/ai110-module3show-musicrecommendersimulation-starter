@@ -9,7 +9,7 @@ You will implement the functions in recommender.py:
 - recommend_songs
 """
 
-from recommender import load_songs, recommend_songs
+from recommender import UserProfile, load_songs, recommend_songs
 
 
 MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
@@ -19,6 +19,11 @@ def main() -> None:
     songs = load_songs("data/songs.csv")
 
     # Starter example profile
+    # user_prefs = {"genre": "pop", "mood": "happy", "energy": 0.8, "accousticness": 0.2}
+    # user_prefs = {"genre": "pop ", "mood": "happy", "energy": 0.8, "accousticness": True}
+    # user_prefs = {"genre": "pop", "mood": "happy", "energy": 0.8, "accousticness": True}
+    # user_prefs = {"genre": "pop", "mood": "happy", "energy": float("nan"), "accousticness": 0.3}
+    # user_prefs = {"genre": "lofi", "mood": "chill", "energy": 0.4, "accousticness": True, "danceability": 1.0}
     user_prefs = {"genre": "pop", "mood": "happy", "energy": 0.8, "accousticness": 0.2}
 
     recommendations = recommend_songs(user_prefs, songs, k=5)

@@ -124,6 +124,254 @@ Paste a sample of your recommender's output here as a text block so a reader can
 
 ---
 
+## Stress Tests:
+1. 
+  Input: user_prefs = {"genre": "pop ", "mood": "happy", "energy": 0.8, "accousticness": True}
+
+  Output
+  ```
+  ======================================================================
+🎵  YOUR TOP SONG RECOMMENDATIONS  🎵
+======================================================================
+👤 Profile: genre=pop  | mood=happy | energy=0.8 | accousticness=True
+======================================================================
+
+🥇 #1  Rooftop Lights — Indigo Parade
+   ⭐ Score: 61.9/100
+   🎸 Genre   ❌ no match (indie pop vs pop ): +0.0 pts
+   🎭 Mood    ✅ match (happy vs happy): +30.0 pts
+   ⚡ Energy  similarity 0.96 (song 0.76 vs target 0.80): +19.2 pts
+   🎻 Acoustic similarity 0.85 (song 0.35 vs target 0.50): +12.8 pts
+----------------------------------------------------------------------
+🥈 #2  Sunrise City — Neon Echo
+   ⭐ Score: 59.8/100
+   🎸 Genre   ❌ no match (pop vs pop ): +0.0 pts
+   🎭 Mood    ✅ match (happy vs happy): +30.0 pts
+   ⚡ Energy  similarity 0.98 (song 0.82 vs target 0.80): +19.6 pts
+   🎻 Acoustic similarity 0.68 (song 0.18 vs target 0.50): +10.2 pts
+----------------------------------------------------------------------
+🥉 #3  Night Drive Loop — Neon Echo
+   ⭐ Score: 29.8/100
+   🎸 Genre   ❌ no match (synthwave vs pop ): +0.0 pts
+   🎭 Mood    ❌ no match (moody vs happy): +0.0 pts
+   ⚡ Energy  similarity 0.95 (song 0.75 vs target 0.80): +19.0 pts
+   🎻 Acoustic similarity 0.72 (song 0.22 vs target 0.50): +10.8 pts
+----------------------------------------------------------------------
+🎶 #4  Island Drift — Solar Tide
+   ⭐ Score: 29.5/100
+   🎸 Genre   ❌ no match (reggae vs pop ): +0.0 pts
+   🎭 Mood    ❌ no match (carefree vs happy): +0.0 pts
+   ⚡ Energy  similarity 0.80 (song 0.60 vs target 0.80): +16.0 pts
+   🎻 Acoustic similarity 0.90 (song 0.40 vs target 0.50): +13.5 pts
+----------------------------------------------------------------------
+🎶 #5  Concrete Sermon — MC Vantage
+   ⭐ Score: 28.7/100
+   🎸 Genre   ❌ no match (hip-hop vs pop ): +0.0 pts
+   🎭 Mood    ❌ no match (confident vs happy): +0.0 pts
+   ⚡ Energy  similarity 1.00 (song 0.80 vs target 0.80): +20.0 pts
+   🎻 Acoustic similarity 0.58 (song 0.08 vs target 0.50): +8.7 pts
+----------------------------------------------------------------------
+
+🎧 Enjoy the music!
+  ```
+2. 
+  Input: user_prefs = {"genre": "pop", "mood": "happy", "energy": 0.8, "accousticness": True}
+
+  Output
+  ```
+  ======================================================================
+🎵  YOUR TOP SONG RECOMMENDATIONS  🎵
+======================================================================
+👤 Profile: genre=pop | mood=happy | energy=0.8 | accousticness=True
+======================================================================
+
+🥇 #1  Sunrise City — Neon Echo
+   ⭐ Score: 94.8/100
+   🎸 Genre   ✅ match (pop vs pop): +35.0 pts
+   🎭 Mood    ✅ match (happy vs happy): +30.0 pts
+   ⚡ Energy  similarity 0.98 (song 0.82 vs target 0.80): +19.6 pts
+   🎻 Acoustic similarity 0.68 (song 0.18 vs target 0.50): +10.2 pts
+----------------------------------------------------------------------
+🥈 #2  Rooftop Lights — Indigo Parade
+   ⭐ Score: 61.9/100
+   🎸 Genre   ❌ no match (indie pop vs pop): +0.0 pts
+   🎭 Mood    ✅ match (happy vs happy): +30.0 pts
+   ⚡ Energy  similarity 0.96 (song 0.76 vs target 0.80): +19.2 pts
+   🎻 Acoustic similarity 0.85 (song 0.35 vs target 0.50): +12.8 pts
+----------------------------------------------------------------------
+🥉 #3  Gym Hero — Max Pulse
+   ⭐ Score: 60.7/100
+   🎸 Genre   ✅ match (pop vs pop): +35.0 pts
+   🎭 Mood    ❌ no match (intense vs happy): +0.0 pts
+   ⚡ Energy  similarity 0.87 (song 0.93 vs target 0.80): +17.4 pts
+   🎻 Acoustic similarity 0.55 (song 0.05 vs target 0.50): +8.2 pts
+----------------------------------------------------------------------
+🎶 #4  Night Drive Loop — Neon Echo
+   ⭐ Score: 29.8/100
+   🎸 Genre   ❌ no match (synthwave vs pop): +0.0 pts
+   🎭 Mood    ❌ no match (moody vs happy): +0.0 pts
+   ⚡ Energy  similarity 0.95 (song 0.75 vs target 0.80): +19.0 pts
+   🎻 Acoustic similarity 0.72 (song 0.22 vs target 0.50): +10.8 pts
+----------------------------------------------------------------------
+🎶 #5  Island Drift — Solar Tide
+   ⭐ Score: 29.5/100
+   🎸 Genre   ❌ no match (reggae vs pop): +0.0 pts
+   🎭 Mood    ❌ no match (carefree vs happy): +0.0 pts
+   ⚡ Energy  similarity 0.80 (song 0.60 vs target 0.80): +16.0 pts
+   🎻 Acoustic similarity 0.90 (song 0.40 vs target 0.50): +13.5 pts
+----------------------------------------------------------------------
+
+🎧 Enjoy the music!
+  ```
+3. 
+  Input: user_prefs = {"genre": "pop", "mood": "happy", "energy": float("nan"), "accousticness": 0.3}
+  
+  Output
+  ```
+======================================================================
+🎵  YOUR TOP SONG RECOMMENDATIONS  🎵
+======================================================================
+👤 Profile: genre=pop | mood=happy | energy=nan | accousticness=0.3
+======================================================================
+
+🥇 #1  Sunrise City — Neon Echo
+   ⭐ Score: nan/100
+   🎸 Genre   ✅ match (pop vs pop): +35.0 pts
+   🎭 Mood    ✅ match (happy vs happy): +30.0 pts
+   ⚡ Energy  similarity nan (song 0.82 vs target nan): +nan pts
+   🎻 Acoustic similarity 0.68 (song 0.18 vs target 0.50): +10.2 pts
+----------------------------------------------------------------------
+🥈 #2  Midnight Coding — LoRoom
+   ⭐ Score: nan/100
+   🎸 Genre   ❌ no match (lofi vs pop): +0.0 pts
+   🎭 Mood    ❌ no match (chill vs happy): +0.0 pts
+   ⚡ Energy  similarity nan (song 0.42 vs target nan): +nan pts
+   🎻 Acoustic similarity 0.79 (song 0.71 vs target 0.50): +11.8 pts
+----------------------------------------------------------------------
+🥉 #3  Storm Runner — Voltline
+   ⭐ Score: nan/100
+   🎸 Genre   ❌ no match (rock vs pop): +0.0 pts
+   🎭 Mood    ❌ no match (intense vs happy): +0.0 pts
+   ⚡ Energy  similarity nan (song 0.91 vs target nan): +nan pts
+   🎻 Acoustic similarity 0.60 (song 0.10 vs target 0.50): +9.0 pts
+----------------------------------------------------------------------
+🎶 #4  Library Rain — Paper Lanterns
+   ⭐ Score: nan/100
+   🎸 Genre   ❌ no match (lofi vs pop): +0.0 pts
+   🎭 Mood    ❌ no match (chill vs happy): +0.0 pts
+   ⚡ Energy  similarity nan (song 0.35 vs target nan): +nan pts
+   🎻 Acoustic similarity 0.64 (song 0.86 vs target 0.50): +9.6 pts
+----------------------------------------------------------------------
+🎶 #5  Gym Hero — Max Pulse
+   ⭐ Score: nan/100
+   🎸 Genre   ✅ match (pop vs pop): +35.0 pts
+   🎭 Mood    ❌ no match (intense vs happy): +0.0 pts
+   ⚡ Energy  similarity nan (song 0.93 vs target nan): +nan pts
+   🎻 Acoustic similarity 0.55 (song 0.05 vs target 0.50): +8.2 pts
+----------------------------------------------------------------------
+
+🎧 Enjoy the music!
+  ```
+1. 
+  Input: user_prefs = {"genre": "lofi", "mood": "chill", "energy": 0.4, "accousticness": True, "danceability": 1.0}
+
+  Output
+  ```
+  ======================================================================
+🎵  YOUR TOP SONG RECOMMENDATIONS  🎵
+======================================================================
+👤 Profile: genre=lofi | mood=chill | energy=0.4 | accousticness=True
+======================================================================
+
+🥇 #1  Midnight Coding — LoRoom
+   ⭐ Score: 96.4/100
+   🎸 Genre   ✅ match (lofi vs lofi): +35.0 pts
+   🎭 Mood    ✅ match (chill vs chill): +30.0 pts
+   ⚡ Energy  similarity 0.98 (song 0.42 vs target 0.40): +19.6 pts
+   🎻 Acoustic similarity 0.79 (song 0.71 vs target 0.50): +11.8 pts
+----------------------------------------------------------------------
+🥈 #2  Library Rain — Paper Lanterns
+   ⭐ Score: 93.6/100
+   🎸 Genre   ✅ match (lofi vs lofi): +35.0 pts
+   🎭 Mood    ✅ match (chill vs chill): +30.0 pts
+   ⚡ Energy  similarity 0.95 (song 0.35 vs target 0.40): +19.0 pts
+   🎻 Acoustic similarity 0.64 (song 0.86 vs target 0.50): +9.6 pts
+----------------------------------------------------------------------
+🥉 #3  Focus Flow — LoRoom
+   ⭐ Score: 65.8/100
+   🎸 Genre   ✅ match (lofi vs lofi): +35.0 pts
+   🎭 Mood    ❌ no match (focused vs chill): +0.0 pts
+   ⚡ Energy  similarity 1.00 (song 0.40 vs target 0.40): +20.0 pts
+   🎻 Acoustic similarity 0.72 (song 0.78 vs target 0.50): +10.8 pts
+----------------------------------------------------------------------
+🎶 #4  Spacewalk Thoughts — Orbit Bloom
+   ⭐ Score: 56.3/100
+   🎸 Genre   ❌ no match (ambient vs lofi): +0.0 pts
+   🎭 Mood    ✅ match (chill vs chill): +30.0 pts
+   ⚡ Energy  similarity 0.88 (song 0.28 vs target 0.40): +17.6 pts
+   🎻 Acoustic similarity 0.58 (song 0.92 vs target 0.50): +8.7 pts
+----------------------------------------------------------------------
+🎶 #5  Dust Road Home — Copper Wagon
+   ⭐ Score: 30.8/100
+   🎸 Genre   ❌ no match (country vs lofi): +0.0 pts
+   🎭 Mood    ❌ no match (nostalgic vs chill): +0.0 pts
+   ⚡ Energy  similarity 0.90 (song 0.50 vs target 0.40): +18.0 pts
+   🎻 Acoustic similarity 0.85 (song 0.65 vs target 0.50): +12.8 pts
+----------------------------------------------------------------------
+
+🎧 Enjoy the music!
+  ```
+5. 
+  Input: user_prefs = {"genre": "pop", "mood": "happy", "energy": 0.8, "accousticness": 0.2}
+
+
+  Output
+  ```
+  ======================================================================
+🎵  YOUR TOP SONG RECOMMENDATIONS  🎵
+======================================================================
+👤 Profile: genre=pop | mood=happy | energy=0.8 | accousticness=0.2
+======================================================================
+
+🥇 #1  Sunrise City — Neon Echo
+   ⭐ Score: 94.8/100
+   🎸 Genre   ✅ match (pop vs pop): +35.0 pts
+   🎭 Mood    ✅ match (happy vs happy): +30.0 pts
+   ⚡ Energy  similarity 0.98 (song 0.82 vs target 0.80): +19.6 pts
+   🎻 Acoustic similarity 0.68 (song 0.18 vs target 0.50): +10.2 pts
+----------------------------------------------------------------------
+🥈 #2  Rooftop Lights — Indigo Parade
+   ⭐ Score: 61.9/100
+   🎸 Genre   ❌ no match (indie pop vs pop): +0.0 pts
+   🎭 Mood    ✅ match (happy vs happy): +30.0 pts
+   ⚡ Energy  similarity 0.96 (song 0.76 vs target 0.80): +19.2 pts
+   🎻 Acoustic similarity 0.85 (song 0.35 vs target 0.50): +12.8 pts
+----------------------------------------------------------------------
+🥉 #3  Gym Hero — Max Pulse
+   ⭐ Score: 60.7/100
+   🎸 Genre   ✅ match (pop vs pop): +35.0 pts
+   🎭 Mood    ❌ no match (intense vs happy): +0.0 pts
+   ⚡ Energy  similarity 0.87 (song 0.93 vs target 0.80): +17.4 pts
+   🎻 Acoustic similarity 0.55 (song 0.05 vs target 0.50): +8.2 pts
+----------------------------------------------------------------------
+🎶 #4  Night Drive Loop — Neon Echo
+   ⭐ Score: 29.8/100
+   🎸 Genre   ❌ no match (synthwave vs pop): +0.0 pts
+   🎭 Mood    ❌ no match (moody vs happy): +0.0 pts
+   ⚡ Energy  similarity 0.95 (song 0.75 vs target 0.80): +19.0 pts
+   🎻 Acoustic similarity 0.72 (song 0.22 vs target 0.50): +10.8 pts
+----------------------------------------------------------------------
+🎶 #5  Island Drift — Solar Tide
+   ⭐ Score: 29.5/100
+   🎸 Genre   ❌ no match (reggae vs pop): +0.0 pts
+   🎭 Mood    ❌ no match (carefree vs happy): +0.0 pts
+   ⚡ Energy  similarity 0.80 (song 0.60 vs target 0.80): +16.0 pts
+   🎻 Acoustic similarity 0.90 (song 0.40 vs target 0.50): +13.5 pts
+----------------------------------------------------------------------
+
+🎧 Enjoy the music!
+  ```
+
 ## Experiments You Tried
 
 Use this section to document the experiments you ran. For example:
@@ -158,6 +406,7 @@ Write 1 to 2 paragraphs here about what you learned:
 
 - about how recommenders turn data into predictions
 - about where bias or unfairness could show up in systems like this
+
 
 
 
