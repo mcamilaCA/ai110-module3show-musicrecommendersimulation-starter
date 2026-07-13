@@ -62,6 +62,7 @@ Run the starter tests with:
 
 ```bash
 pytest
+``` 
 ```
 
 You can add more tests in `tests/test_recommender.py`.
@@ -73,12 +74,50 @@ You can add more tests in `tests/test_recommender.py`.
 Paste a sample of your recommender's output here as a text block so a reader can see what it produces:
 
 ```
-# e.g.:
-# User profile: genre=indie, mood=chill, energy=low
-# Recommendations:
-#   1. ...
-#   2. ...
-#   3. ...
+======================================================================
+🎵  YOUR TOP SONG RECOMMENDATIONS  🎵
+======================================================================
+👤 Profile: genre=pop | mood=happy | energy=0.8 | accousticness=0.2
+======================================================================
+
+🥇 #1  Sunrise City — Neon Echo
+   ⭐ Score: 94.8/100
+   🎸 Genre   ✅ match (pop vs pop): +35.0 pts
+   🎭 Mood    ✅ match (happy vs happy): +30.0 pts
+   ⚡ Energy  similarity 0.98 (song 0.82 vs target 0.80): +19.6 pts
+   🎻 Acoustic similarity 0.68 (song 0.18 vs target 0.50): +10.2 pts
+----------------------------------------------------------------------
+🥈 #2  Rooftop Lights — Indigo Parade
+   ⭐ Score: 61.9/100
+   🎸 Genre   ❌ no match (indie pop vs pop): +0.0 pts
+   🎭 Mood    ✅ match (happy vs happy): +30.0 pts
+   ⚡ Energy  similarity 0.96 (song 0.76 vs target 0.80): +19.2 pts
+   🎻 Acoustic similarity 0.85 (song 0.35 vs target 0.50): +12.8 pts
+----------------------------------------------------------------------
+🥉 #3  Gym Hero — Max Pulse
+   ⭐ Score: 60.7/100
+   🎸 Genre   ✅ match (pop vs pop): +35.0 pts
+   🎭 Mood    ❌ no match (intense vs happy): +0.0 pts
+   ⚡ Energy  similarity 0.87 (song 0.93 vs target 0.80): +17.4 pts
+   🎻 Acoustic similarity 0.55 (song 0.05 vs target 0.50): +8.2 pts
+----------------------------------------------------------------------
+🎶 #4  Night Drive Loop — Neon Echo
+   ⭐ Score: 29.8/100
+   🎸 Genre   ❌ no match (synthwave vs pop): +0.0 pts
+   🎭 Mood    ❌ no match (moody vs happy): +0.0 pts
+   ⚡ Energy  similarity 0.95 (song 0.75 vs target 0.80): +19.0 pts
+   🎻 Acoustic similarity 0.72 (song 0.22 vs target 0.50): +10.8 pts
+----------------------------------------------------------------------
+🎶 #5  Island Drift — Solar Tide
+   ⭐ Score: 29.5/100
+   🎸 Genre   ❌ no match (reggae vs pop): +0.0 pts
+   🎭 Mood    ❌ no match (carefree vs happy): +0.0 pts
+   ⚡ Energy  similarity 0.80 (song 0.60 vs target 0.80): +16.0 pts
+   🎻 Acoustic similarity 0.90 (song 0.40 vs target 0.50): +13.5 pts
+----------------------------------------------------------------------
+
+🎧 Enjoy the music!
+
 ```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->

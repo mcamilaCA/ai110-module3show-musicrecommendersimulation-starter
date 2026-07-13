@@ -19,6 +19,7 @@ ACOUSTIC_TARGET_DISLIKED = 0.15
 
 
 def acoustic_target(likes_acoustic: bool) -> float:
+    """Maps a boolean acoustic preference to its target acousticness anchor."""
     return ACOUSTIC_TARGET_LIKED if likes_acoustic else ACOUSTIC_TARGET_DISLIKED
 
 
@@ -50,14 +51,14 @@ def _score_core(
     )
 
     reasons = [
-        f"Genre {'matches' if genre_match else 'does not match'} "
-        f"({genre} vs {favorite_genre}) -> +{WEIGHT_GENRE * genre_match * 100:.1f} pts",
-        f"Mood {'matches' if mood_match else 'does not match'} "
-        f"({mood} vs {favorite_mood}) -> +{WEIGHT_MOOD * mood_match * 100:.1f} pts",
-        f"Energy similarity {energy_similarity:.2f} "
-        f"(song={energy:.2f}, target={target_energy:.2f}) -> +{WEIGHT_ENERGY * energy_similarity * 100:.1f} pts",
-        f"Acousticness similarity {acoustic_similarity:.2f} "
-        f"(song={acousticness:.2f}, target={target_acousticness:.2f}) -> +{WEIGHT_ACOUSTICNESS * acoustic_similarity * 100:.1f} pts",
+        f"🎸 Genre   {'✅ match' if genre_match else '❌ no match'} "
+        f"({genre} vs {favorite_genre}): +{WEIGHT_GENRE * genre_match * 100:.1f} pts",
+        f"🎭 Mood    {'✅ match' if mood_match else '❌ no match'} "
+        f"({mood} vs {favorite_mood}): +{WEIGHT_MOOD * mood_match * 100:.1f} pts",
+        f"⚡ Energy  similarity {energy_similarity:.2f} "
+        f"(song {energy:.2f} vs target {target_energy:.2f}): +{WEIGHT_ENERGY * energy_similarity * 100:.1f} pts",
+        f"🎻 Acoustic similarity {acoustic_similarity:.2f} "
+        f"(song {acousticness:.2f} vs target {target_acousticness:.2f}): +{WEIGHT_ACOUSTICNESS * acoustic_similarity * 100:.1f} pts",
     ]
     return score, reasons
 
@@ -102,6 +103,7 @@ class Recommender:
         self.songs = songs
 
     def recommend(self, user: UserProfile, k: int = 5) -> List[Song]:
+        """Returns the top-k songs for a user, ranked by score with danceability as tie-breaker."""
         target_acousticness = acoustic_target(user.likes_acoustic)
 
         def sort_key(song: Song) -> Tuple[float, float]:
@@ -117,13 +119,14 @@ class Recommender:
         return ranked[:k]
 
     def explain_recommendation(self, user: UserProfile, song: Song) -> str:
+        """Builds a human-readable, per-feature breakdown of a song's score for a user."""
         target_acousticness = acoustic_target(user.likes_acoustic)
         score, reasons = _score_core(
             song.genre, song.mood, song.energy, song.acousticness,
             user.favorite_genre, user.favorite_mood, user.target_energy, target_acousticness,
         )
-        lines = [f"{song.title} scored {score:.1f}/100:"]
-        lines.extend(f"  - {reason}" for reason in reasons)
+        lines = [f"🎧 {song.title} — ⭐ {score:.1f}/100"]
+        lines.extend(f"   {reason}" for reason in reasons)
         return "\n".join(lines)
 
 def load_songs(csv_path: str) -> List[Dict]:
@@ -184,4 +187,7 @@ def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tup
         scored.append((song, score, reasons, tie_break))
 
     scored.sort(key=lambda item: (item[1], item[3]), reverse=True)
-    return [(song, score, "; ".join(reasons)) for song, score, reasons, _ in scored[:k]]
+    return [
+        (song, score, "\n".join(f"   {reason}" for reason in reasons))
+        for song, score, reasons, _ in scored[:k]
+    ]
