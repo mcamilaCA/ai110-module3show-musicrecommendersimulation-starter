@@ -17,17 +17,19 @@ Replace this paragraph with your own summary of what your version does.
 
 ## How The System Works
 
-Explain your design in plain language.
+The system aims to recommend songs to user's based on their preferences & likings. For each song, details like genre, mood, energy and acousticness are translated into a score with the end goal of achieving a high compatibililty with a user's profile, the higher the score, the more likely a song is to be liked by the user.
 
-Some prompts to answer:
+For this, user statistics will be used to define: favorite mood, their most frequently listened energy levels and whether or not they like acoustic music. 
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
+Instead of using thresholds, recommender calculates distance-based rewards prioritizing answering "how close is this feature to what the user wants to hear?". Once each weighted score is calculated, a ranking of all songs scores is computed to decide which songs are the ones with higher likelihood to be liked by the user and they are returned. If there is a tie of songs with the same score, danceability preferences are used to determine the one to be given to the user.
 
-You can include a simple diagram or bullet list if helpful.
+This being said, the weights that will be used for each attribute are:
+1. genre: 35%
+2. mood: 30%
+3. energy: 20%
+4. acousticness: 15% 
+
+As seen by the weigthts above, the system has a bias for genre and mood - since it assumes every user gives a higher priority to genre than to mood or any of the other atributes. In an ideal system, it might ask for users preference, update the weights accordingly and store that data internally.
 
 ---
 
