@@ -2,110 +2,92 @@
 
 ## 1. Model Name  
 
-Give your model a short, descriptive name.  
-Example: **VibeFinder 1.0**  
+Tunefy
 
 ---
 
 ## 2. Intended Use  
 
-Describe what your recommender is designed to do and who it is for. 
+This system is for those who like to discover new hits that they will (probably) like. Based on user preferences, it analyzes the songs stored and provides the user with a top 5 of new songs they might want to give a try. 
 
-Prompts:  
-
-- What kind of recommendations does it generate  
-- What assumptions does it make about the user  
-- Is this for real users or classroom exploration  
+The system is currently a class project, and as such, assumptions such as importance of user preferences are made to simplify the development process.
 
 ---
 
 ## 3. How the Model Works  
 
-Explain your scoring approach in simple language.  
+This system asks for 4 or 5 user preferences:  genre, mood, energy, acousticness and danceability in order to find songs they will like. 
 
-Prompts:  
+The probabily of likelyhood is calculated by checking how many of those preferences a song actually lines up with, and giving it more credit the closer the match — a song with the same genre and mood as the listener, and an energy and acoustic feel close to what they asked for, ends up looking like a much stronger pick than a song that only checks one of those boxes.
 
-- What features of each song are used (genre, energy, mood, etc.)  
-- What user preferences are considered  
-- How does the model turn those into a score  
-- What changes did you make from the starter logic  
+The model turns the user preferences into a score by handing out points for each trait that lines up with what the listener wants. Genre and mood are treated as "it either matches or it doesn't," so those hand out a full chunk of points or none at all. Energy and how acoustic a song sounds are treated more like a dial — the closer a song's numbers are to what the listener asked for, the more of those points it earns, even if it's not a perfect match. All of the points get combined into a single score out of 100, and songs are shown to the listener in order from the highest score to the lowest.
 
-Avoid code here. Pretend you are explaining the idea to a friend who does not program.
+Main changes in the starter logic are moving away from a loose, case-insensitive comparison for genre and mood to a strict, exact-match comparison; switching from a handful of arbitrary bonus points to a clear, weighted formula where each preference's importance is spelled out as a percentage of the total; treating "likes acoustic songs" as a sliding scale instead of a simple yes/no cutoff; turning danceability into a tie-breaker used only when two songs are otherwise equally good, rather than something that adds to the main score; and adding a plain-language breakdown for every recommendation so a listener can see exactly why a song was suggested to them.
 
 ---
 
 ## 4. Data  
 
-Describe the dataset the model uses.  
+The catalog has 18 songs in total. It started as a smaller starter set of 10 songs (covering pop, lofi, rock, ambient, jazz, synthwave, and indie pop), and I added 8 more songs on top of that — one each in folk, metal, R&B, EDM, country, hip-hop, classical, and reggae — to give the system a wider range of genres to recommend from. No songs were removed.
 
-Prompts:  
+Even with that addition, the catalog is still pretty thin once you break it down: pop has 2 songs and lofi has 3, but every other genre — rock, ambient, jazz, synthwave, indie pop, folk, metal, R&B, EDM, country, hip-hop, classical, and reggae — only has a single song representing it. Moods are similarly uneven: chill shows up 3 times, and happy, intense, and nostalgic each show up twice, but moods like relaxed, moody, focused, angry, romantic, euphoric, confident, peaceful, and carefree only appear once. That means for most genres or moods, there's no real "second option" to choose between — the system either has the one song that fits, or it doesn't.
 
-- How many songs are in the catalog  
-- What genres or moods are represented  
-- Did you add or remove data  
-- Are there parts of musical taste missing in the dataset  
+There's also a fair amount of musical taste missing altogether. There's nothing for genres like Latin/reggaeton, K-pop, punk, blues, gospel, or other world/international styles, and no holiday or instrumental/soundtrack music. On the mood side, there's no real "sad" or "melancholic" bucket (the closest is "nostalgic"), and nothing that captures a "meditative" or "aggressive party" vibe distinct from what's already there. So a listener whose taste falls outside this fairly narrow slice won't have much for the system to actually recommend from.
 
 ---
 
 ## 5. Strengths  
 
-Where does your system seem to work well  
+The system works best for listeners whose favorite genre and mood happen to be ones the catalog actually has more than one song for right now, that's mainly pop and lofi/chill. For those listeners, there are enough songs sharing their favorite genre and mood that the energy and acoustic-feel preferences actually get to do their job and separate a great match from an okay one, instead of the recommendation being decided by there just being one song to pick from.
 
-Prompts:  
+The scoring seems to correctly capture the "how close is this song to what I want" feeling for energy and acousticness. A listener who says they want high-energy, non-acoustic, happy pop reliably gets bright, upbeat, electronic-leaning songs at the top, and a listener who wants mellow, acoustic, chill music gets calm, unplugged-sounding songs at the top, rather than something that merely matches the genre label but feels totally different in energy. The written explanation attached to each recommendation also lines up with the actual score, so a listener can see exactly why a song was picked and that reasoning matches what they'd expect just from listening to it.
 
-- User types for which it gives reasonable results  
-- Any patterns you think your scoring captures correctly  
-- Cases where the recommendations matched your intuition  
+When I tried this out with two sample listeners, an upbeat, happy, high-energy pop fan and a mellow, chill, acoustic-leaning lofi fan, the top recommendations for each matched what I'd intuitively expect someone with that taste to enjoy, which was reassuring to see given how simple the underlying scoring really is.
 
 ---
 
 ## 6. Limitations and Bias 
 
-Where the system struggles or behaves unfairly. 
+The way the weights are set up currently makes it so that 65% of the grade is composed genre & mood, which means that if there is a wrong labels for any of those, the song will most likely not be suggested as a very strong option. Since the data is limited and the catalog uses determined punctuation, if the user enters their preferences in a different manner, the system will not be able to pick the up; for example, RnB instead of R&B
+Moreover, due to the limited data, the availability of songs of certain range are limited, a user that likes pop will be biased if compared to one that likes heavy metal.
 
-Prompts:  
-
-- Features it does not consider  
-- Genres or moods that are underrepresented  
-- Cases where the system overfits to one preference  
-- Ways the scoring might unintentionally favor some users  
-
----
 
 ## 7. Evaluation  
 
-How you checked whether the recommender behaved as expected. 
+The system seems to behave as expected, songs that have similar characteristics than the user preferences are recommended. 
 
-Prompts:  
+The profiles tested were: 
+1. An upbeat pop fan who wants happy, high-energy tracks with a produced/electronic (non-acoustic) sound.
+2. A mellow lofi/chill listener wanting low-to-moderate energy and acoustic instrumentation, while also wanting maximally danceable tracks.
 
-- Which user profiles you tested  
-- What you looked for in the recommendations  
-- What surprised you  
-- Any simple tests or comparisons you ran  
+I experimented with different weights and the system still recommended the same songs (or the first 3 same songs) but with different weights, which makes me think the recipe for likeness is stable.
 
-No need for numeric metrics unless you created some.
+Each song recommended showcases their similarity score in refence to the user likes and its ranked by such.
 
+I also tried a handful of "messy" profiles on purpose, to see how the system handles input that isn't perfectly clean, and it exposed a few real weak spots:
+
+- Typing the acoustic preference as `True`/`False` instead of a number gave the exact same recommendations as leaving it out entirely, since the scoring code is actually looking for a differently-named field. In other words, telling the system you like or dislike acoustic songs this way silently does nothing.
+- Adding one stray trailing space to the genre ("pop " instead of "pop") was enough to knock the single best match (Sunrise City, previously the clear #1 pick) all the way down, because the genre comparison expects an exact character-for-character match.
+- Leaving energy undefined (technically, a `NaN` value) didn't produce an error, but it quietly broke the ranking; every song ended up with an undefined score and the "recommendations" came back in basically the same order they appear in the CSV, not actually ranked by fit at all.
+- Asking for maximum danceability alongside a chill/lofi preference had no visible effect on the results, since danceability is only ever consulted to break an exact tie in score, and ties essentially never happen once energy and acousticness are involved.
+
+None of these caused the program to crash, which sounds good on the surface, but it also means a listener could type a slightly-off preference and get back a confident-looking, fully-scored list of "recommendations" that don't actually reflect what they asked for, with nothing telling them something went wrong.
 ---
 
 ## 8. Future Work  
 
-Ideas for how you would improve the model next.  
+For additional features, I'd want to let listeners describe their taste with more nuance than one exact genre and one exact mood, like picking a couple of genres they enjoy, or rating how important each preference is to them, plus maybe a tempo or "lyrics vs instrumental" preference, since those get completely ignored right now.
 
-Prompts:  
+For explaining recommendations, I'd want to move past the raw point breakdown and instead call out, in a sentence or two, the one or two reasons a song was picked ("this made the list mostly because it matches your mood and energy, even though it's a different genre than usual"), so the reasoning reads more like a friend's recommendation and less like a receipt.
 
-- Additional features or preferences  
-- Better ways to explain recommendations  
-- Improving diversity among the top results  
-- Handling more complex user tastes  
+For diversity, I'd want to add a genre/mood "closeness" map so related styles get partial credit instead of zero (so a pop fan can still get credit for indie pop, for example), and maybe deliberately slip in one or two songs outside the listener's usual pattern so the recommendations don't just reinforce the same narrow slice of the catalog every time.
+
+For handling messier or more complex tastes, I'd want the system to clean up user input before scoring it, trimming extra spaces, ignoring letter case, catching typos or mismatched field names instead of silently ignoring them, and refusing to produce a ranked list at all if a preference like energy comes in undefined, rather than quietly returning a meaningless order. I'd also want a bigger, more evenly spread catalog so listeners with less common tastes have more than one song to choose from.
 
 ---
 
 ## 9. Personal Reflection  
 
-A few sentences about your experience.  
+As a music lover, I had always been curious about how the recommendation system worked and, even though I know this is not how full scale algorithms are, it did serve to open my eyes and demistify its complexity. Now I have a better understanding of how it might work, and even though it still feels like magic, at least I am able to imagine what goes behind the scenes.
 
-Prompts:  
-
-- What you learned about recommender systems  
-- Something unexpected or interesting you discovered  
-- How this changed the way you think about music recommendation apps  
+I was surprised to learn how there are multiple scores (& different ways to set up scoring systems), and my brain is still processing how we get to a likeability score based on data like genre and others, but I hope with more time working with it, it will become more intuitive. 

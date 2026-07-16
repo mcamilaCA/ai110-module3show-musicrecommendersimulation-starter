@@ -10,19 +10,23 @@
 
 **What task did you give the agent?**
 
-<!-- Describe the goal you asked the agent to accomplish -->
+The agent helped expand the dataset and update the functions to implement relevant new features
 
 **Prompts used:**
 
-<!-- Paste the key prompts you gave the agent -->
+Act as a data expert and help me introduce 5 complex attributes to the dataset ( @data/songs.csv ) that are not currently present, such as Song Popularity (0-100), Release Decade, or Detailed Mood Tags (e.g., "nostalgic," "aggressive," "euphoric"). Then, help me update @src/recommender.py  to have in mind the new data when scoring songs
 
 **What did the agent generate or change?**
 
-<!-- List the files edited, code generated, or commands run -->
+The agent editted: src/recommender.py and songs.csv.
+Changes made:
+- UserProfile incorporated new fields
+- _score_core now has instrumentalness and release_decade as new weighted dimensions (each weighting 0.10)
+- explicit_content acts as pre-scoring filter and popularity is used alongside danceability as tiebreaker
 
 **What did you verify or fix manually?**
 
-<!-- Describe anything the agent got wrong or that required human review -->
+I double checked all the code and updated the profiles in main.py to verify output match as well - and apply modifications as needed. 
 
 ---
 
