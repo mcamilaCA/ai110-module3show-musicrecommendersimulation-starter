@@ -140,7 +140,7 @@ def _score_core(
         f"(song {energy:.2f} vs target {target_energy:.2f}): +{WEIGHT_ENERGY * energy_similarity * 100:.1f} pts",
         f"🎻 Acoustic similarity {acoustic_similarity:.2f} "
         f"(song {acousticness:.2f} vs target {target_acousticness:.2f}): +{WEIGHT_ACOUSTICNESS * acoustic_similarity * 100:.1f} pts",
-        f"🎙️ Instrumentalness {instrumental_note}: +{WEIGHT_INSTRUMENTALNESS * instrumental_similarity * 100:.1f} pts",
+        f"🎤 Instrumentalness {instrumental_note}: +{WEIGHT_INSTRUMENTALNESS * instrumental_similarity * 100:.1f} pts",
         f"📅 Decade  {decade_note}: +{WEIGHT_DECADE * decade_match * 100:.1f} pts",
     ]
     return score, reasons

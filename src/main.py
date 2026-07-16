@@ -9,6 +9,8 @@ You will implement the functions in recommender.py:
 - recommend_songs
 """
 
+from tabulate import tabulate
+
 from recommender import UserProfile, load_songs, recommend_songs
 
 
@@ -47,13 +49,13 @@ def main() -> None:
     print("=" * 70)
     print()
 
+    rows = []
     for rank, (song, score, explanation) in enumerate(recommendations, start=1):
         medal = MEDALS.get(rank, "🎶")
-        print(f"{medal} #{rank}  {song['title']} — {song['artist']}")
-        print(f"   ⭐ Score: {score:.1f}/100")
-        print(explanation)
-        print("-" * 70)
+        why = "\n".join(line.strip() for line in explanation.strip().split("\n"))
+        rows.append([f"{medal} #{rank}", song["title"], song["artist"], f"{score:.1f}/100", why])
 
+    print(tabulate(rows, headers=["Rank", "Song", "Artist", "Score", "Why"], tablefmt="fancy_grid"))
     print("\n🎧 Enjoy the music!\n")
 
 
