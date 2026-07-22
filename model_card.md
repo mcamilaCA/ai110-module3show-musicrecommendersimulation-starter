@@ -51,6 +51,7 @@ When I tried this out with two sample listeners, an upbeat, happy, high-energy p
 The way the weights are set up currently makes it so that 65% of the grade is composed genre & mood, which means that if there is a wrong labels for any of those, the song will most likely not be suggested as a very strong option. Since the data is limited and the catalog uses determined punctuation, if the user enters their preferences in a different manner, the system will not be able to pick the up; for example, RnB instead of R&B
 Moreover, due to the limited data, the availability of songs of certain range are limited, a user that likes pop will be biased if compared to one that likes heavy metal.
 
+**Update:** the specific silent-failure bugs below (NaN energy, the mismatched `acousticness`/`likes_acoustic` field name, and the trailing-space genre typo) are no longer silent. A validation/planning step (`src/planner.py`) now runs before scoring: it either excludes an invalid continuous preference (energy/acousticness) from scoring and logs a warning, or, for a missing/invalid genre or mood where there's no safe fallback, rejects the request outright with a clear error instead of returning a ranked list. See §7 and §8 for what's still open.
 
 ## 7. Evaluation  
 
@@ -72,6 +73,8 @@ I also tried a handful of "messy" profiles on purpose, to see how the system han
 - Asking for maximum danceability alongside a chill/lofi preference had no visible effect on the results, since danceability is only ever consulted to break an exact tie in score, and ties essentially never happen once energy and acousticness are involved.
 
 None of these caused the program to crash, which sounds good on the surface, but it also means a listener could type a slightly-off preference and get back a confident-looking, fully-scored list of "recommendations" that don't actually reflect what they asked for, with nothing telling them something went wrong.
+
+**Update:** I re-ran all four of these exact inputs after adding the planning/logging layer. The `NaN` energy case no longer produces a `NaN` score — energy is excluded from scoring and a warning notice explains why. The `acousticness: True/False` case is now recognized as a likely `likes_acoustic` value and applied, with a notice explaining the correction. The trailing-space genre case is trimmed before matching, so `"pop "` behaves like `"pop"` again. The danceability-tie-break case is unchanged (still a genuine design limitation, not a bug — see §8).
 ---
 
 ## 8. Future Work  
@@ -83,6 +86,8 @@ For explaining recommendations, I'd want to move past the raw point breakdown an
 For diversity, I'd want to add a genre/mood "closeness" map so related styles get partial credit instead of zero (so a pop fan can still get credit for indie pop, for example), and maybe deliberately slip in one or two songs outside the listener's usual pattern so the recommendations don't just reinforce the same narrow slice of the catalog every time.
 
 For handling messier or more complex tastes, I'd want the system to clean up user input before scoring it, trimming extra spaces, ignoring letter case, catching typos or mismatched field names instead of silently ignoring them, and refusing to produce a ranked list at all if a preference like energy comes in undefined, rather than quietly returning a meaningless order. I'd also want a bigger, more evenly spread catalog so listeners with less common tastes have more than one song to choose from.
+
+**Update:** most of the input-cleaning half of this is now implemented (whitespace trimming, mismatched-field-name recovery for acousticness, excluding invalid continuous values from scoring, and hard-rejecting a missing genre/mood instead of silently ranking). I deliberately kept genre/mood as case-sensitive exact matches rather than adding case-insensitivity here, since that strictness was an intentional earlier design choice (see "How The System Works" in the README), not a bug. What's still open: the genre/mood closeness map, deliberate diversity injection, and the bigger/more evenly spread catalog are all unchanged.
 
 ---
 

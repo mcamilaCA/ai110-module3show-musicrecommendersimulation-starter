@@ -31,6 +31,8 @@ This being said, the weights that will be used for each attribute are:
 
 As seen by the weigthts above, the system has a bias for genre and mood - since it assumes every user gives a higher priority to genre than to mood or any of the other atributes. In an ideal system, it might ask for users preference, update the weights accordingly and store that data internally.
 
+Before any of that scoring happens, a validation/planning step (`src/planner.py`) checks the raw preferences first. A missing or invalid genre/mood has no sensible fallback, so it's rejected outright with a clear error instead of producing a ranking. A missing or invalid energy/acousticness value (like the `NaN` or wrong-field-name cases below) gets excluded from scoring instead of silently corrupting it, and every decision the planner makes is logged to `logs/recommender.log` and surfaced to the listener as a notice, so a messy preference no longer produces a confident-looking but meaningless list with no explanation.
+
 ---
 
 ## Getting Started

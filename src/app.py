@@ -14,6 +14,9 @@ import os
 import streamlit as st
 
 from recommender import recommend_songs
+from planner import PlanningError, configure_logging
+
+configure_logging()
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "songs.csv")
 MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
@@ -105,7 +108,14 @@ else:
         f"**Prefer popular:** {'Yes' if prefs['prefer_popular'] else 'Any'}"
     )
 
-    recommendations = recommend_songs(prefs, songs, k=prefs["k"])
+    try:
+        recommendations, notices = recommend_songs(prefs, songs, k=prefs["k"])
+    except PlanningError as error:
+        st.error(f"Could not build recommendations: {error}")
+        st.stop()
+
+    for notice in notices:
+        (st.warning if notice.level == "warning" else st.info)(notice.message)
 
     st.subheader("🎧 Top recommendations")
 

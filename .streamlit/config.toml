@@ -1,0 +1,58 @@
+[theme]
+base = "light"
+
+# Antique Parchment
+backgroundColor = "#F2E9DA"
+# Subtle parchment tint (Parchment + a touch of Pewter) for widgets/code blocks
+secondaryBackgroundColor = "#E6DED2"
+# Walnut — warm ink for body text
+textColor = "#4A3428"
+
+# Burgundy Velvet — buttons, active elements
+primaryColor = "#5C2432"
+# Antique Gold — links
+linkColor = "#B08A3C"
+linkUnderline = false
+
+# Code
+codeTextColor = "#2D2A2F"
+codeBackgroundColor = "#E6DED2"
+
+# Borders
+borderColor = "#7A7E86"
+dataframeBorderColor = "#7A7E86"
+dataframeHeaderBackgroundColor = "#E6DED2"
+
+# Semantic palette, reusing the brand colors so status colors (e.g. score
+# badges in st.metric via :green[]/:yellow[]/:red[]) stay on-brand.
+greenColor = "#4E5A3F"   # Forest Moss
+yellowColor = "#B08A3C"  # Antique Gold
+redColor = "#5C2432"     # Burgundy Velvet
+blueColor = "#29354A"    # Oxford Navy
+grayColor = "#7A7E86"    # Pewter
+
+# Typography
+# Display/Hero + Headings: Cormorant Garamond (semibold)
+headingFont = "'Cormorant Garamond':https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+headingFontWeights = [600, 600, 600, 600, 600, 600]
+
+# Body / buttons / navigation / tables: Inter
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+baseFontWeight = 400
+
+# Code + numbers/statistics: JetBrains Mono
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+
+baseRadius = "medium"
+buttonRadius = "medium"
+showWidgetBorder = true
+showSidebarBorder = true
+
+[theme.sidebar]
+# Charcoal Slate — dark, wood-paneled-study sidebar
+backgroundColor = "#2D2A2F"
+secondaryBackgroundColor = "#4A3428"
+codeBackgroundColor = "#4A3428"
+textColor = "#F2E9DA"
+borderColor = "#7A7E86"
+primaryColor = "#B08A3C"

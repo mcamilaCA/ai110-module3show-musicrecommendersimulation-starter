@@ -2,6 +2,17 @@ import csv
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass, field
 
+try:
+    # Bare import: works when src/ itself is on sys.path (streamlit's script
+    # loading, or `PYTHONPATH=src python -m src.main`, both used elsewhere in
+    # this file's docstrings/README).
+    from planner import Notice, log_notices, plan_user_prefs
+except ImportError:
+    # Package-qualified import: works when the repo root is on sys.path and
+    # this module is loaded as src.recommender (e.g. `from src.recommender
+    # import ...` in tests/test_recommender.py).
+    from src.planner import Notice, log_notices, plan_user_prefs
+
 # Point-weighting strategy (must sum to 1.0).
 # Genre and mood are categorical (all-or-nothing match), so they carry more
 # weight than the continuous, self-correcting energy/acousticness distances.
@@ -72,6 +83,8 @@ def _score_core(
     target_instrumentalness: Optional[float] = None,
     release_decade: Optional[str] = None,
     favorite_decade: Optional[str] = None,
+    skip_energy: bool = False,
+    skip_acousticness: bool = False,
 ) -> Tuple[float, List[str]]:
     """
     Shared scoring formula used by both the OOP (Recommender) and functional
@@ -81,6 +94,12 @@ def _score_core(
     mood_tags/instrumentalness/release_decade and their targets are all optional
     so existing callers (like the starter tests) that don't supply them still get
     the original genre/mood/energy/acousticness behavior, unaffected.
+
+    skip_energy/skip_acousticness let the planner (src/planner.py) exclude a
+    dimension that came in invalid (e.g. NaN energy) instead of letting it
+    corrupt the score: the dimension gets full credit, the same "doesn't
+    discriminate" treatment already used for an unset instrumentalness/decade
+    preference.
     """
     if genre == favorite_genre:
         genre_match = 1.0
@@ -97,8 +116,23 @@ def _score_core(
         mood_match = 0.0
         mood_note = "❌ no match"
 
-    energy_similarity = 1.0 - abs(energy - target_energy)
-    acoustic_similarity = 1.0 - abs(acousticness - target_acousticness)
+    if skip_energy:
+        energy_similarity = 1.0
+        energy_note = "⚪ excluded (invalid input)"
+    else:
+        energy_similarity = 1.0 - abs(energy - target_energy)
+        energy_note = (
+            f"similarity {energy_similarity:.2f} (song {energy:.2f} vs target {target_energy:.2f})"
+        )
+
+    if skip_acousticness:
+        acoustic_similarity = 1.0
+        acoustic_note = "⚪ excluded (invalid input)"
+    else:
+        acoustic_similarity = 1.0 - abs(acousticness - target_acousticness)
+        acoustic_note = (
+            f"similarity {acoustic_similarity:.2f} (song {acousticness:.2f} vs target {target_acousticness:.2f})"
+        )
 
     # No stated preference => full credit, so this dimension never discriminates
     # between songs unless the listener actually opts in.
@@ -136,10 +170,8 @@ def _score_core(
         f"({genre} vs {favorite_genre}): +{WEIGHT_GENRE * genre_match * 100:.1f} pts",
         f"🎭 Mood    {mood_note} "
         f"({mood} vs {favorite_mood}): +{WEIGHT_MOOD * mood_match * 100:.1f} pts",
-        f"⚡ Energy  similarity {energy_similarity:.2f} "
-        f"(song {energy:.2f} vs target {target_energy:.2f}): +{WEIGHT_ENERGY * energy_similarity * 100:.1f} pts",
-        f"🎻 Acoustic similarity {acoustic_similarity:.2f} "
-        f"(song {acousticness:.2f} vs target {target_acousticness:.2f}): +{WEIGHT_ACOUSTICNESS * acoustic_similarity * 100:.1f} pts",
+        f"⚡ Energy  {energy_note}: +{WEIGHT_ENERGY * energy_similarity * 100:.1f} pts",
+        f"🎻 Acoustic {acoustic_note}: +{WEIGHT_ACOUSTICNESS * acoustic_similarity * 100:.1f} pts",
         f"🎤 Instrumentalness {instrumental_note}: +{WEIGHT_INSTRUMENTALNESS * instrumental_similarity * 100:.1f} pts",
         f"📅 Decade  {decade_note}: +{WEIGHT_DECADE * decade_match * 100:.1f} pts",
     ]
@@ -271,12 +303,22 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     likes_acoustic/wants_instrumental/preferred_decade are optional so callers
     (like the starter main.py profile) that don't specify them still get a
     sensible neutral score instead of a crash.
+
+    _skip_energy/_skip_acousticness are set by src/planner.py's plan_user_prefs
+    when the corresponding raw value was invalid (e.g. NaN, wrong type); when
+    set, a safe placeholder is used instead of converting the invalid value,
+    and the dimension is excluded from scoring rather than corrupting it.
     """
+    skip_energy = bool(user_prefs.get("_skip_energy"))
+    skip_acousticness = bool(user_prefs.get("_skip_acousticness"))
+
     likes_acoustic = user_prefs.get("likes_acoustic")
-    if likes_acoustic is None:
+    if skip_acousticness or likes_acoustic is None:
         target_acousticness = 0.5
     else:
         target_acousticness = acoustic_target(likes_acoustic)
+
+    target_energy = 0.5 if skip_energy else float(user_prefs.get("energy", 0.5))
 
     return _score_core(
         song.get("genre"),
@@ -285,29 +327,44 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
         float(song.get("acousticness", 0.0)),
         user_prefs.get("genre"),
         user_prefs.get("mood"),
-        float(user_prefs.get("energy", 0.5)),
+        target_energy,
         target_acousticness,
         mood_tags=song.get("mood_tags"),
         instrumentalness=float(song.get("instrumentalness", 0.0)),
         target_instrumentalness=instrumental_target(user_prefs.get("wants_instrumental")),
         release_decade=song.get("release_decade"),
         favorite_decade=user_prefs.get("preferred_decade"),
+        skip_energy=skip_energy,
+        skip_acousticness=skip_acousticness,
     )
 
-def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tuple[Dict, float, str]]:
+def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> Tuple[List[Tuple[Dict, float, str]], List[Notice]]:
     """
     Functional implementation of the recommendation logic.
     Required by src/main.py
-    """
-    preferred_danceability = user_prefs.get("danceability")
-    prefer_popular = user_prefs.get("prefer_popular", False)
 
-    if user_prefs.get("clean_only"):
+    Before scoring, raw user_prefs is validated and cleaned by
+    src/planner.py's plan_user_prefs: missing/invalid genre or mood raises
+    PlanningError (no safe fallback), while missing/invalid energy or
+    acousticness are excluded from scoring instead of corrupting it. Every
+    decision is logged and returned as a Notice so callers can surface it.
+
+    Returns (results, notices) instead of just results.
+    """
+    catalog_genres = {song["genre"] for song in songs if song.get("genre")}
+    catalog_moods = {song["mood"] for song in songs if song.get("mood")}
+    cleaned_prefs, notices = plan_user_prefs(user_prefs, catalog_genres, catalog_moods)
+    log_notices(notices)
+
+    preferred_danceability = cleaned_prefs.get("danceability")
+    prefer_popular = cleaned_prefs.get("prefer_popular", False)
+
+    if cleaned_prefs.get("clean_only"):
         songs = [song for song in songs if not song.get("explicit_content")]
 
     scored = []
     for song in songs:
-        score, reasons = score_song(user_prefs, song)
+        score, reasons = score_song(cleaned_prefs, song)
         if preferred_danceability is None:
             dance_tie_break = 0.0
         else:
@@ -316,7 +373,8 @@ def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tup
         scored.append((song, score, reasons, dance_tie_break, popularity_tie_break))
 
     scored.sort(key=lambda item: (item[1], item[3], item[4]), reverse=True)
-    return [
+    results = [
         (song, score, "\n".join(f"   {reason}" for reason in reasons))
         for song, score, reasons, _, _ in scored[:k]
     ]
+    return results, notices

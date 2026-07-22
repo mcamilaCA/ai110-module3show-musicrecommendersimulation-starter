@@ -12,12 +12,15 @@ You will implement the functions in recommender.py:
 from tabulate import tabulate
 
 from recommender import UserProfile, load_songs, recommend_songs
+from planner import PlanningError, configure_logging
 
 
 MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
+NOTICE_ICONS = {"warning": "⚠️", "info": "ℹ️"}
 
 
 def main() -> None:
+    configure_logging()
     songs = load_songs("data/songs.csv")
 
     # Starter example profile
@@ -28,18 +31,26 @@ def main() -> None:
     # user_prefs = {"genre": "lofi", "mood": "chill", "energy": 0.4, "acousticness": True, "danceability": 1.0}
     # user_prefs = {"genre": "lofi", "mood": "chill", "energy": 0.4, "acousticness": 0.8, "wants_instrumental": True, "preferred_decade": "1990s", "clean_only": True}
     user_prefs = {
-        "genre": "pop", "mood": "happy", "energy": 0.8, "acousticness": 0.2,
+        "genre": "pop", "mood": "happy", "energy": 0.8, "likes_acoustic": False,
         "preferred_decade": "2020s", "wants_instrumental": False,
         "clean_only": True, "prefer_popular": True,
     }
 
-    recommendations = recommend_songs(user_prefs, songs, k=5)
+    try:
+        recommendations, notices = recommend_songs(user_prefs, songs, k=5)
+    except PlanningError as error:
+        print(f"\n❌ Could not build recommendations: {error}\n")
+        return
 
     print()
     print("=" * 70)
     print("🎵  YOUR TOP SONG RECOMMENDATIONS  🎵")
     print("=" * 70)
-    print(f"👤 Profile: genre={user_prefs['genre']} | mood={user_prefs['mood']} | energy={user_prefs['energy']} | acousticness={user_prefs['acousticness']}")
+    for notice in notices:
+        print(f"{NOTICE_ICONS[notice.level]} {notice.message}")
+    if notices:
+        print("=" * 70)
+    print(f"👤 Profile: genre={user_prefs['genre']} | mood={user_prefs['mood']} | energy={user_prefs['energy']} | likes_acoustic={user_prefs['likes_acoustic']}")
     print(
         f"   decade={user_prefs.get('preferred_decade', 'any')} | "
         f"wants_instrumental={user_prefs.get('wants_instrumental', 'no preference')} | "
