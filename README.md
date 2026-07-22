@@ -56,6 +56,16 @@ pip install -r requirements.txt
 python -m src.main
 ```
 
+### Running the Web App
+
+To interact with the recommender in a browser instead of the CLI:
+
+```bash
+streamlit run src/app.py
+```
+
+This opens a page where you can set your genre, mood, energy, and other preferences with sliders/dropdowns in the sidebar, and see ranked recommendations with a score breakdown for each song.
+
 ### Running Tests
 
 Run the starter tests with:
